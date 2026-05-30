@@ -4,14 +4,34 @@ import CampusCard from '../components/CampusCard';
 
 export default function HomeScreen({ navigation }) {
   const newsItems = [
-    { id: '1', title: 'Opendeurdag', category: 'Event' },
-    { id: '2', title: 'Nieuwe studierichting', category: 'Studie' },
-  ];
+  {
+    id: '1',
+    title: 'Opendeurdag',
+    category: 'Event',
+    content: 'Kom kennismaken met onze school tijdens de opendeurdag.',
+  },
+  {
+    id: '2',
+    title: 'Nieuwe studierichting',
+    category: 'Studie',
+    content: 'Vanaf volgend schooljaar lanceren we een nieuwe richting.',
+  },
+];
 
   const campusItems = [
-    { id: '1', name: 'Campus Caputsteen', city: 'Mechelen' },
-    { id: '2', name: 'Campus Pitzemburg', city: 'Mechelen' },
-  ];
+  {
+    id: '1',
+    name: 'Campus Caputsteen',
+    category: 'Doorstroom',
+    description: 'Een campus met focus op doorstroomrichtingen.',
+  },
+  {
+    id: '2',
+    name: 'Campus Pitzemburg',
+    category: 'Dubbele finaliteit',
+    description: 'Een campus met verschillende praktijkgerichte richtingen.',
+  },
+];
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -29,10 +49,11 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Laatste nieuws</Text>
         {newsItems.map((item) => (
-        <NewsCard
+  <NewsCard
     key={item.id}
     title={item.title}
     category={item.category}
+    onPress={() => navigation.navigate('NewsDetails', { newsItem: item })}
   />
 ))}
       </View>
@@ -40,12 +61,13 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Onze campussen</Text>
         {campusItems.map((item) => (
-          <CampusCard
-            key={item.id}
-            name={item.name}
-            category={item.category}
-          />
-        ))}
+  <CampusCard
+    key={item.id}
+    name={item.name}
+    category={item.category}
+    onPress={() => navigation.navigate('CampusDetails', { campusItem: item })}
+  />
+))}
       </View>
     </ScrollView>
   );

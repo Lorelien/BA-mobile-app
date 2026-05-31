@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 export default function Studiezoeker() {
   const courses = [
@@ -109,142 +110,43 @@ export default function Studiezoeker() {
       />
 
       <Text style={styles.filterTitle}>Onderwijsniveau</Text>
-      <View style={styles.filterGroup}>
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedEducationLevel === 'Alle' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedEducationLevel('Alle')}
+      <View style={styles.pickerWrapper}>
+        <Picker
+          selectedValue={selectedEducationLevel}
+          onValueChange={(itemValue) => setSelectedEducationLevel(itemValue)}
         >
-          <Text style={styles.filterText}>Alle</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedEducationLevel === 'Doorstroom' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedEducationLevel('Doorstroom')}
-        >
-          <Text style={styles.filterText}>Doorstroom</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedEducationLevel === 'Dubbele finaliteit' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedEducationLevel('Dubbele finaliteit')}
-        >
-          <Text style={styles.filterText}>Dubbele finaliteit</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedEducationLevel === 'Arbeidsmarkt' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedEducationLevel('Arbeidsmarkt')}
-        >
-          <Text style={styles.filterText}>Arbeidsmarkt</Text>
-        </Pressable>
+          <Picker.Item label="Alle" value="Alle" />
+          <Picker.Item label="Doorstroom" value="Doorstroom" />
+          <Picker.Item label="Dubbele finaliteit" value="Dubbele finaliteit" />
+          <Picker.Item label="Arbeidsmarkt" value="Arbeidsmarkt" />
+        </Picker>
       </View>
 
       <Text style={styles.filterTitle}>Interesse</Text>
-      <View style={styles.filterGroup}>
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedInterest === 'Alle' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedInterest('Alle')}
+      <View style={styles.pickerWrapper}>
+        <Picker
+          selectedValue={selectedInterest}
+          onValueChange={(itemValue) => setSelectedInterest(itemValue)}
         >
-          <Text style={styles.filterText}>Alle</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedInterest === 'Talen' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedInterest('Talen')}
-        >
-          <Text style={styles.filterText}>Talen</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedInterest === 'Techniek' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedInterest('Techniek')}
-        >
-          <Text style={styles.filterText}>Techniek</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedInterest === 'Zorg' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedInterest('Zorg')}
-        >
-          <Text style={styles.filterText}>Zorg</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedInterest === 'Economie' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedInterest('Economie')}
-        >
-          <Text style={styles.filterText}>Economie</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedInterest === 'Wetenschap' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedInterest('Wetenschap')}
-        >
-          <Text style={styles.filterText}>Wetenschap</Text>
-        </Pressable>
+          <Picker.Item label="Alle" value="Alle" />
+          <Picker.Item label="Talen" value="Talen" />
+          <Picker.Item label="Techniek" value="Techniek" />
+          <Picker.Item label="Zorg" value="Zorg" />
+          <Picker.Item label="Economie" value="Economie" />
+          <Picker.Item label="Wetenschap" value="Wetenschap" />
+        </Picker>
       </View>
 
       <Text style={styles.filterTitle}>Campus</Text>
-      <View style={styles.filterGroup}>
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedCampus === 'Alle' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedCampus('Alle')}
+      <View style={styles.pickerWrapper}>
+        <Picker
+          selectedValue={selectedCampus}
+          onValueChange={(itemValue) => setSelectedCampus(itemValue)}
         >
-          <Text style={styles.filterText}>Alle</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedCampus === 'Campus Caputsteen' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedCampus('Campus Caputsteen')}
-        >
-          <Text style={styles.filterText}>Caputsteen</Text>
-        </Pressable>
-
-        <Pressable
-          style={[
-            styles.filterButton,
-            selectedCampus === 'Campus Pitzemburg' && styles.activeButton,
-          ]}
-          onPress={() => setSelectedCampus('Campus Pitzemburg')}
-        >
-          <Text style={styles.filterText}>Pitzemburg</Text>
-        </Pressable>
+          <Picker.Item label="Alle" value="Alle" />
+          <Picker.Item label="Campus Caputsteen" value="Campus Caputsteen" />
+          <Picker.Item label="Campus Pitzemburg" value="Campus Pitzemburg" />
+        </Picker>
       </View>
 
       <View style={styles.sortRow}>
@@ -255,7 +157,7 @@ export default function Studiezoeker() {
           ]}
           onPress={() => setSortOrder('A-Z')}
         >
-          <Text style={styles.filterText}>A-Z</Text>
+          <Text style={styles.sortButtonText}>A-Z</Text>
         </Pressable>
 
         <Pressable
@@ -265,7 +167,7 @@ export default function Studiezoeker() {
           ]}
           onPress={() => setSortOrder('Z-A')}
         >
-          <Text style={styles.filterText}>Z-A</Text>
+          <Text style={styles.sortButtonText}>Z-A</Text>
         </Pressable>
       </View>
 
@@ -320,11 +222,17 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 16,
   },
-  filterButton: {
-    backgroundColor: '#e0e0e0',
-    padding: 12,
-    borderRadius: 8,
+  filterTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 8,
+    marginTop: 10,
+  },
+  pickerWrapper: {
+    backgroundColor: '#f2f2f2',
+    borderRadius: 10,
+    marginBottom: 16,
+    overflow: 'hidden',
   },
   sortRow: {
     flexDirection: 'row',
@@ -340,23 +248,10 @@ const styles = StyleSheet.create({
   activeButton: {
     backgroundColor: '#339af0',
   },
-  filterText: {
+  sortButtonText: {
     color: '#000',
     fontWeight: '600',
-  },
-  emptyText: {
-    marginTop: 20,
-    fontStyle: 'italic',
-    color: '#666',
-  },
-  filterTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginTop: 10,
-  },
-  filterGroup: {
-    marginBottom: 16,
+    textAlign: 'center',
   },
   resetButton: {
     backgroundColor: '#222',
@@ -368,5 +263,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  emptyText: {
+    marginTop: 20,
+    fontStyle: 'italic',
+    color: '#666',
   },
 });

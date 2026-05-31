@@ -14,6 +14,24 @@ export default function HomeScreen({ navigation }) {
   const [newsError, setNewsError] = useState('');
   const [campusError, setCampusError] = useState('');
 
+  const newsCategoryMap = {
+  '6a11af2049ee8658828ef6f1': 'Activiteit',
+  '6a11af67c652b2bcd587e90c': 'Terugblik',
+  '6a11aefaa4b44b5af57ae9db': 'Nieuws',
+};
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString('nl-BE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -65,32 +83,28 @@ export default function HomeScreen({ navigation }) {
           <Text>Geen nieuws gevonden.</Text>
         ) : null}
 
-        {!loadingNews &&
-          !newsError &&
-          newsItems.map((item) => (
-            <NewsCard
-              key={item.id}
-              title={item.fieldData?.title || 'Geen titel'}
-              category="Nieuws"
-              onPress={() =>
-                navigation.navigate('NewsDetails', {
-                  newsItem: {
-                    title: item.fieldData?.title || 'Geen titel',
-                    category: 'Nieuws',
-                    shortDescription:
-                      item.fieldData?.['short-description'] ||
-                      'Geen korte beschrijving',
-                    content:
-                      item.fieldData?.['text-image'] ||
-                      item.fieldData?.['short-description'] ||
-                      'Geen inhoud',
-                    date: item.fieldData?.datum || 'Geen datum',
-                    image: item.fieldData?.image || null,
-                  },
-                })
-              }
-            />
-          ))}
+       {!loadingNews &&
+  !newsError &&
+  newsItems.map((item) => {
+    const categoryIds = item.fieldData?.categories || [];
+    const firstCategoryId = Array.isArray(categoryIds) ? categoryIds[0] : null;
+
+    return (
+      <NewsCard
+        key={item.id}
+        title={item.fieldData?.title || item.fieldData?.name || 'Geen titel'}
+        category={newsCategoryMap[firstCategoryId] || 'Nieuws'}
+        date={formatDate(item.fieldData?.datum)}
+        description={item.fieldData?.['short-description'] || ''}
+        accentColor={item.fieldData?.color || '#111111'}
+        onPress={() =>
+          navigation.navigate('NewsDetails', {
+            newsItem: item,
+          })
+        }
+      />
+    );
+  })}
       </View>
 
       <View style={styles.section}>
@@ -105,26 +119,33 @@ export default function HomeScreen({ navigation }) {
 
         {!loadingCampuses &&
   !campusError &&
-  campusItems.map((item) => (
-    <CampusCard
-      key={item.id}
-      name={item.fieldData?.name || 'Geen naam'}
-      category={item.fieldData?.description || 'Geen beschrijving'}
-      onPress={() =>
-        navigation.navigate('CampusDetails', {
-          campusItem: {
-            title: item.fieldData?.name || 'Geen naam',
-            category: item.fieldData?.description || 'Campus',
-            description: item.fieldData?.description || 'Geen beschrijving',
-            content: item.fieldData?.['long-description'] || 'Geen inhoud',
-            address: item.fieldData?.adress || 'Geen adres',
-            email: item.fieldData?.email || 'Geen e-mail',
-            image: item.fieldData?.image || null,
-          },
-        })
-      }
-    />
-  ))}
+  campusItems.map((item) => {
+    console.log('CAMPUS FIELD DATA:', item.fieldData);
+    console.log('CAMPUS ADDRESS:', item.fieldData?.adres);
+
+    return (
+      <CampusCard
+        key={item.id}
+        name={item.fieldData?.name || 'Geen naam'}
+        description={item.fieldData?.description || 'Geen beschrijving'}
+        address={item.fieldData?.adres || 'Geen adres'}
+        color={item.fieldData?.color || '#111111'}
+        onPress={() =>
+          navigation.navigate('CampusDetails', {
+            campusItem: {
+              title: item.fieldData?.name || 'Geen naam',
+              description: item.fieldData?.description || 'Geen beschrijving',
+              content: item.fieldData?.['long-description'] || 'Geen inhoud',
+              address: item.fieldData?.adres || 'Geen adres',
+              email: item.fieldData?.email || 'Geen e-mail',
+              image: item.fieldData?.image || null,
+              color: item.fieldData?.color || '#111111',
+            },
+          })
+        }
+      />
+    );
+  })}
       </View>
     </ScrollView>
   );

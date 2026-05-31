@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import CourseCard from '../components/CourseCard';
 import {
   View,
   Text,
@@ -9,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import CourseCard from '../components/CourseCard';
 import { fetchCourses, fetchCampuses } from '../services/webflow';
 
 const niveauMap = {
@@ -31,6 +31,7 @@ const interesseMap = {
 export default function Studiezoeker() {
   const [courses, setCourses] = useState([]);
   const [campuses, setCampuses] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -67,26 +68,35 @@ export default function Studiezoeker() {
 
   const campusMap = useMemo(() => {
     const map = {};
+
     campuses.forEach((item) => {
-      map[item.id] = item.fieldData?.name || 'Onbekende campus';
+      map[item.id] = {
+        name: item.fieldData?.name || 'Onbekende campus',
+        color: item.fieldData?.color || '#111111',
+      };
     });
+
     return map;
   }, [campuses]);
 
-  const mappedCourses = courses.map((item) => {
-    const campusIds = item.fieldData?.campus || [];
-    const firstCampusId = Array.isArray(campusIds) ? campusIds[0] : null;
+  const mappedCourses = useMemo(() => {
+    return courses.map((item) => {
+      const campusIds = item.fieldData?.campus || [];
+      const firstCampusId = Array.isArray(campusIds) ? campusIds[0] : null;
+      const linkedCampus = campusMap[firstCampusId];
 
-    return {
-      id: item.id,
-      name: item.fieldData?.name || 'Geen naam',
-      educationLevel:
-        niveauMap[item.fieldData?.['niveau-2']] || 'Geen niveau',
-      interest:
-        interesseMap[item.fieldData?.['interesse-2']] || 'Geen interesse',
-      campus: campusMap[firstCampusId] || 'Geen campus',
-    };
-  });
+      return {
+        id: item.id,
+        name: item.fieldData?.name || 'Geen naam',
+        educationLevel:
+          niveauMap[item.fieldData?.['niveau-2']] || 'Geen niveau',
+        interest:
+          interesseMap[item.fieldData?.['interesse-2']] || 'Geen interesse',
+        campus: linkedCampus?.name || 'Geen campus',
+        campusColor: linkedCampus?.color || '#111111',
+      };
+    });
+  }, [courses, campusMap]);
 
   const filteredCourses = mappedCourses
     .filter((course) => {
@@ -151,17 +161,18 @@ export default function Studiezoeker() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Studiezoeker</Text>
       <Text style={styles.subtitle}>
-        Zoek en filter opleidingen op naam, niveau, interesse en campus
+        Zoek opleidingen op naam, niveau, interesse en campus
       </Text>
 
-      {loading && <Text>Opleidingen worden geladen...</Text>}
-      {!!error && <Text>{error}</Text>}
+      {loading && <Text style={styles.statusText}>Opleidingen worden geladen...</Text>}
+      {!!error && <Text style={styles.statusText}>{error}</Text>}
 
       {!loading && !error && (
         <>
           <TextInput
-            style={styles.input}
-            placeholder="Zoek op naam..."
+            style={styles.searchInput}
+            placeholder="Zoek op opleiding..."
+            placeholderTextColor="#8a9096"
             value={searchText}
             onChangeText={setSearchText}
           />
@@ -208,21 +219,35 @@ export default function Studiezoeker() {
             <Pressable
               style={[
                 styles.sortButton,
-                sortOrder === 'A-Z' && styles.activeButton,
+                sortOrder === 'A-Z' && styles.activeSortButton,
               ]}
               onPress={() => setSortOrder('A-Z')}
             >
-              <Text style={styles.sortButtonText}>A-Z</Text>
+              <Text
+                style={[
+                  styles.sortButtonText,
+                  sortOrder === 'A-Z' && styles.activeSortButtonText,
+                ]}
+              >
+                A-Z
+              </Text>
             </Pressable>
 
             <Pressable
               style={[
                 styles.sortButton,
-                sortOrder === 'Z-A' && styles.activeButton,
+                sortOrder === 'Z-A' && styles.activeSortButton,
               ]}
               onPress={() => setSortOrder('Z-A')}
             >
-              <Text style={styles.sortButtonText}>Z-A</Text>
+              <Text
+                style={[
+                  styles.sortButtonText,
+                  sortOrder === 'Z-A' && styles.activeSortButtonText,
+                ]}
+              >
+                Z-A
+              </Text>
             </Pressable>
           </View>
 
@@ -246,6 +271,7 @@ export default function Studiezoeker() {
               educationLevel={course.educationLevel}
               interest={course.interest}
               campus={course.campus}
+              campusColor={course.campusColor}
             />
           ))}
 
@@ -262,67 +288,102 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingBottom: 40,
+    backgroundColor: '#f5f5f3',
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#111111',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 20,
+    lineHeight: 24,
+    color: '#5f6368',
+    marginBottom: 24,
   },
-  input: {
-    backgroundColor: '#f2f2f2',
-    borderRadius: 10,
-    padding: 14,
+  statusText: {
+    fontSize: 15,
+    color: '#5f6368',
     marginBottom: 16,
+  },
+  searchInput: {
+    backgroundColor: '#ffffff',
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 15,
+    fontSize: 16,
+    color: '#111111',
+    marginBottom: 18,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   filterTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#111111',
     marginBottom: 8,
-    marginTop: 10,
+    marginTop: 6,
   },
   pickerWrapper: {
-    backgroundColor: '#f2f2f2',
-    borderRadius: 10,
+    backgroundColor: '#ffffff',
+    borderRadius: 18,
     marginBottom: 16,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
   sortRow: {
     flexDirection: 'row',
     gap: 10,
-    marginBottom: 20,
+    marginTop: 6,
+    marginBottom: 18,
   },
   sortButton: {
-    backgroundColor: '#e0e0e0',
-    padding: 12,
-    borderRadius: 8,
     flex: 1,
+    backgroundColor: '#ffffff',
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  activeButton: {
-    backgroundColor: '#339af0',
+  activeSortButton: {
+    backgroundColor: '#111111',
   },
   sortButtonText: {
-    color: '#000',
-    fontWeight: '600',
-    textAlign: 'center',
+    color: '#111111',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  activeSortButtonText: {
+    color: '#ffffff',
   },
   resetButton: {
-    backgroundColor: '#222',
-    padding: 14,
-    borderRadius: 8,
-    marginBottom: 20,
+    backgroundColor: '#111111',
+    paddingVertical: 15,
+    borderRadius: 18,
+    alignItems: 'center',
+    marginBottom: 22,
   },
   resetButtonText: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
   },
   emptyText: {
-    marginTop: 20,
+    marginTop: 12,
+    fontSize: 15,
+    color: '#8a9096',
     fontStyle: 'italic',
-    color: '#666',
   },
 });

@@ -1,37 +1,46 @@
+import { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import NewsCard from '../components/NewsCard';
 import CampusCard from '../components/CampusCard';
+import { fetchNews, fetchCampuses } from '../services/webflow';
 
 export default function HomeScreen({ navigation }) {
-  const newsItems = [
-  {
-    id: '1',
-    title: 'Opendeurdag',
-    category: 'Event',
-    content: 'Kom kennismaken met onze school tijdens de opendeurdag.',
-  },
-  {
-    id: '2',
-    title: 'Nieuwe studierichting',
-    category: 'Studie',
-    content: 'Vanaf volgend schooljaar lanceren we een nieuwe richting.',
-  },
-];
+  const [newsItems, setNewsItems] = useState([]);
+  const [campusItems, setCampusItems] = useState([]);
 
-  const campusItems = [
-  {
-    id: '1',
-    name: 'Campus Caputsteen',
-    category: 'Doorstroom',
-    description: 'Een campus met focus op doorstroomrichtingen.',
-  },
-  {
-    id: '2',
-    name: 'Campus Pitzemburg',
-    category: 'Dubbele finaliteit',
-    description: 'Een campus met verschillende praktijkgerichte richtingen.',
-  },
-];
+  const [loadingNews, setLoadingNews] = useState(true);
+  const [loadingCampuses, setLoadingCampuses] = useState(true);
+
+  const [newsError, setNewsError] = useState('');
+  const [campusError, setCampusError] = useState('');
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const news = await fetchNews();
+        setNewsItems(news);
+        setNewsError('');
+      } catch (err) {
+        console.log('NEWS ERROR:', err);
+        setNewsError(err.message || 'Kon nieuws niet laden.');
+      } finally {
+        setLoadingNews(false);
+      }
+
+      try {
+        const campuses = await fetchCampuses();
+        setCampusItems(campuses);
+        setCampusError('');
+      } catch (err) {
+        console.log('CAMPUS ERROR:', err);
+        setCampusError(err.message || 'Kon campussen niet laden.');
+      } finally {
+        setLoadingCampuses(false);
+      }
+    }
+
+    loadData();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -48,26 +57,74 @@ export default function HomeScreen({ navigation }) {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Laatste nieuws</Text>
-        {newsItems.map((item) => (
-  <NewsCard
-    key={item.id}
-    title={item.title}
-    category={item.category}
-    onPress={() => navigation.navigate('NewsDetails', { newsItem: item })}
-  />
-))}
+
+        {loadingNews ? <Text>Nieuws wordt geladen...</Text> : null}
+        {newsError ? <Text>{newsError}</Text> : null}
+
+        {!loadingNews && !newsError && newsItems.length === 0 ? (
+          <Text>Geen nieuws gevonden.</Text>
+        ) : null}
+
+        {!loadingNews &&
+          !newsError &&
+          newsItems.map((item) => (
+            <NewsCard
+              key={item.id}
+              title={item.fieldData?.title || 'Geen titel'}
+              category="Nieuws"
+              onPress={() =>
+                navigation.navigate('NewsDetails', {
+                  newsItem: {
+                    title: item.fieldData?.title || 'Geen titel',
+                    category: 'Nieuws',
+                    shortDescription:
+                      item.fieldData?.['short-description'] ||
+                      'Geen korte beschrijving',
+                    content:
+                      item.fieldData?.['text-image'] ||
+                      item.fieldData?.['short-description'] ||
+                      'Geen inhoud',
+                    date: item.fieldData?.datum || 'Geen datum',
+                    image: item.fieldData?.image || null,
+                  },
+                })
+              }
+            />
+          ))}
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Onze campussen</Text>
-        {campusItems.map((item) => (
-  <CampusCard
-    key={item.id}
-    name={item.name}
-    category={item.category}
-    onPress={() => navigation.navigate('CampusDetails', { campusItem: item })}
-  />
-))}
+
+        {loadingCampuses ? <Text>Campussen worden geladen...</Text> : null}
+        {campusError ? <Text>{campusError}</Text> : null}
+
+        {!loadingCampuses && !campusError && campusItems.length === 0 ? (
+          <Text>Geen campussen gevonden.</Text>
+        ) : null}
+
+        {!loadingCampuses &&
+  !campusError &&
+  campusItems.map((item) => (
+    <CampusCard
+      key={item.id}
+      name={item.fieldData?.name || 'Geen naam'}
+      category={item.fieldData?.description || 'Geen beschrijving'}
+      onPress={() =>
+        navigation.navigate('CampusDetails', {
+          campusItem: {
+            title: item.fieldData?.name || 'Geen naam',
+            category: item.fieldData?.description || 'Campus',
+            description: item.fieldData?.description || 'Geen beschrijving',
+            content: item.fieldData?.['long-description'] || 'Geen inhoud',
+            address: item.fieldData?.adress || 'Geen adres',
+            email: item.fieldData?.email || 'Geen e-mail',
+            image: item.fieldData?.image || null,
+          },
+        })
+      }
+    />
+  ))}
       </View>
     </ScrollView>
   );

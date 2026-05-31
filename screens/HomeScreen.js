@@ -220,25 +220,30 @@ export default function HomeScreen({ navigation }) {
           !campusError &&
           filteredCampusItems.map((item) => (
             <CampusCard
-              key={item.id}
-              name={item.fieldData?.name || 'Geen naam'}
-              description={item.fieldData?.description || 'Geen beschrijving'}
-              address={item.fieldData?.adres || 'Geen adres'}
-              color={item.fieldData?.color || '#111111'}
-              onPress={() =>
-                navigation.navigate('CampusDetails', {
-                  campusItem: {
-                    title: item.fieldData?.name || 'Geen naam',
-                    description: item.fieldData?.description || 'Geen beschrijving',
-                    content: item.fieldData?.['long-description'] || 'Geen inhoud',
-                    address: item.fieldData?.adres || 'Geen adres',
-                    email: item.fieldData?.email || 'Geen e-mail',
-                    image: item.fieldData?.image || null,
-                    color: item.fieldData?.color || '#111111',
-                  },
-                })
-              }
-            />
+  title={item.fieldData?.name || 'Geen naam'}
+  address={item.fieldData?.adres || 'Geen adres'}
+  category={item.fieldData?.description || 'Campus'}
+  color={item.fieldData?.color || '#111111'}
+  onPress={() =>
+    navigation.navigate('CampusDetails', {
+      campusItem: {
+        title: item.fieldData?.name || 'Geen naam',
+        category: item.fieldData?.description || 'Campus',
+        description:
+          item.fieldData?.['long-description'] ||
+          item.fieldData?.description ||
+          'Geen beschrijving',
+        address: item.fieldData?.adres || 'Geen adres',
+        email: item.fieldData?.email || 'Geen e-mail',
+        image:
+          item.fieldData?.image ||
+          item.fieldData?.['main-image'] ||
+          null,
+        color: item.fieldData?.color || '#111111',
+      },
+    })
+  }
+/>
           ))}
       </View>
     </ScrollView>

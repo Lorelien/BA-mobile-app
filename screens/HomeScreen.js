@@ -1,9 +1,18 @@
-import { useEffect, useState } from 'react';
-import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
+import { useEffect, useLayoutEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Image,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import NewsCard from '../components/NewsCard';
 import CampusCard from '../components/CampusCard';
 import { fetchNews, fetchCampuses } from '../services/webflow';
+
+const PRIMARY_GREEN = '#86bc25';
 
 export default function HomeScreen({ navigation }) {
   const [newsItems, setNewsItems] = useState([]);
@@ -23,6 +32,19 @@ export default function HomeScreen({ navigation }) {
     '6a11af67c652b2bcd587e90c': 'Terugblik',
     '6a11aefaa4b44b5af57ae9db': 'Nieuws',
   };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <Image
+          source={require('../assets/images/Logo mobile.png')}
+          style={styles.headerLogo}
+          resizeMode="contain"
+        />
+      ),
+      headerTitleAlign: 'left',
+    });
+  }, [navigation]);
 
   function formatDate(dateString) {
     if (!dateString) return '';
@@ -97,11 +119,13 @@ export default function HomeScreen({ navigation }) {
       <Text style={styles.title}>Home</Text>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Studiezoeker</Text>
-        <Button
-          title="Ga naar studiezoeker"
+        <Text style={styles.studyFinderTitle}>Studiezoeker</Text>
+        <Pressable
+          style={styles.primaryButton}
           onPress={() => navigation.navigate('Studiezoeker')}
-        />
+        >
+          <Text style={styles.primaryButtonText}>Studiezoeker</Text>
+        </Pressable>
       </View>
 
       <View style={styles.section}>
@@ -124,11 +148,7 @@ export default function HomeScreen({ navigation }) {
                 onValueChange={(itemValue) => setSelectedNewsCategory(itemValue)}
               >
                 {newsCategoryOptions.map((category) => (
-                  <Picker.Item
-                    key={category}
-                    label={category}
-                    value={category}
-                  />
+                  <Picker.Item key={category} label={category} value={category} />
                 ))}
               </Picker>
             </View>
@@ -185,11 +205,7 @@ export default function HomeScreen({ navigation }) {
                 onValueChange={(itemValue) => setSelectedCampusCategory(itemValue)}
               >
                 {campusCategoryOptions.map((category) => (
-                  <Picker.Item
-                    key={category}
-                    label={category}
-                    value={category}
-                  />
+                  <Picker.Item key={category} label={category} value={category} />
                 ))}
               </Picker>
             </View>
@@ -230,6 +246,10 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  headerLogo: {
+    width: 42,
+    height: 42,
+  },
   container: {
     padding: 20,
     paddingBottom: 40,
@@ -238,13 +258,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#111111',
+    color: PRIMARY_GREEN,
     marginBottom: 24,
   },
   section: {
     marginBottom: 30,
   },
   sectionTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: PRIMARY_GREEN,
+    marginBottom: 12,
+  },
+  studyFinderTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#111111',
@@ -271,5 +297,19 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
+  },
+  primaryButton: {
+    backgroundColor: PRIMARY_GREEN,
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  primaryButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });

@@ -1,15 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  View,
   Text,
   TextInput,
   StyleSheet,
   Pressable,
   ScrollView,
+  View,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import CourseCard from '../components/CourseCard';
 import { fetchCourses, fetchCampuses } from '../services/webflow';
+
+const PRIMARY_GREEN = '#86bc25';
 
 const niveauMap = {
   'b8776b89c98676dae45f5b2a4e7910bf': 'Duaal',
@@ -48,9 +50,6 @@ export default function Studiezoeker() {
           fetchCourses(),
           fetchCampuses(),
         ]);
-
-        console.log('COURSE ITEMS:', courseItems);
-        console.log('CAMPUS ITEMS:', campusItems);
 
         setCourses(courseItems);
         setCampuses(campusItems);
@@ -217,37 +216,17 @@ export default function Studiezoeker() {
 
           <View style={styles.sortRow}>
             <Pressable
-              style={[
-                styles.sortButton,
-                sortOrder === 'A-Z' && styles.activeSortButton,
-              ]}
+              style={styles.sortButtonPrimary}
               onPress={() => setSortOrder('A-Z')}
             >
-              <Text
-                style={[
-                  styles.sortButtonText,
-                  sortOrder === 'A-Z' && styles.activeSortButtonText,
-                ]}
-              >
-                A-Z
-              </Text>
+              <Text style={styles.sortButtonPrimaryText}>A-Z</Text>
             </Pressable>
 
             <Pressable
-              style={[
-                styles.sortButton,
-                sortOrder === 'Z-A' && styles.activeSortButton,
-              ]}
+              style={styles.sortButtonOutline}
               onPress={() => setSortOrder('Z-A')}
             >
-              <Text
-                style={[
-                  styles.sortButtonText,
-                  sortOrder === 'Z-A' && styles.activeSortButtonText,
-                ]}
-              >
-                Z-A
-              </Text>
+              <Text style={styles.sortButtonOutlineText}>Z-A</Text>
             </Pressable>
           </View>
 
@@ -293,7 +272,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#111111',
+    color: PRIMARY_GREEN,
     marginBottom: 8,
   },
   subtitle: {
@@ -324,7 +303,7 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#111111',
+    color: PRIMARY_GREEN,
     marginBottom: 8,
     marginTop: 6,
   },
@@ -345,33 +324,36 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 18,
   },
-  sortButton: {
+  sortButtonPrimary: {
+    flex: 1,
+    backgroundColor: PRIMARY_GREEN,
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  sortButtonPrimaryText: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  sortButtonOutline: {
     flex: 1,
     backgroundColor: '#ffffff',
     paddingVertical: 14,
     borderRadius: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    borderWidth: 2,
+    borderColor: PRIMARY_GREEN,
   },
-  activeSortButton: {
-    backgroundColor: '#111111',
-  },
-  sortButtonText: {
-    color: '#111111',
+  sortButtonOutlineText: {
+    color: PRIMARY_GREEN,
     fontSize: 15,
     fontWeight: '700',
   },
-  activeSortButtonText: {
-    color: '#ffffff',
-  },
   resetButton: {
-    backgroundColor: '#111111',
+    backgroundColor: PRIMARY_GREEN,
     paddingVertical: 15,
-    borderRadius: 18,
+    borderRadius: 16,
     alignItems: 'center',
     marginBottom: 22,
   },

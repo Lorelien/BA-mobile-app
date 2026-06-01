@@ -167,7 +167,8 @@ export default function HomeScreen({ navigation }) {
       >
         <Text style={styles.gameCardTitle}>Mini game</Text>
         <Text style={styles.gameCardText}>
-          Test of jij schoolitems kan herkennen
+          Test of jij schoolitems kan herkennen.
+          Druk hier om te spelen!
         </Text>
       </Pressable>
 
@@ -316,6 +317,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f3',
   },
   title: {
+    fontFamily: 'Poppins',
     fontSize: 32,
     fontWeight: '800',
     color: PRIMARY_GREEN,

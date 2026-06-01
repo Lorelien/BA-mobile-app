@@ -1,66 +1,99 @@
-import { ScrollView, Text, StyleSheet, View, Image, useWindowDimensions } from 'react-native';
-import RenderHTML from 'react-native-render-html';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 
-const PRIMARY_GREEN = '#86bc25';
+export default function NewsDetailsScreen({ route }) {
+  const { newsItem } = route.params;
 
-export default function NewsDetails({ route }) {
-  const { width } = useWindowDimensions();
+  const title =
+    newsItem?.fieldData?.title ||
+    newsItem?.fieldData?.name ||
+    'Geen titel';
 
-  const newsItem = route?.params?.newsItem;
-  const fieldData = newsItem?.fieldData || {};
+  const accentColor = newsItem?.fieldData?.color || '#111111';
 
-  const title = fieldData?.title || fieldData?.name || 'Geen titel';
+  const date =
+    newsItem?.fieldData?.datum ||
+    newsItem?.fieldData?.date ||
+    '';
 
-  const date = fieldData?.datum
-    ? new Date(fieldData.datum).toLocaleDateString('nl-BE', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : '';
+  const campus =
+    newsItem?.fieldData?.campus ||
+    newsItem?.fieldData?.campusnaam ||
+    newsItem?.fieldData?.locatie ||
+    newsItem?.fieldData?.location ||
+    '';
 
-  const shortDescription = fieldData?.['short-description'] || '';
-  const htmlContent = fieldData?.['text-image'] || '';
-  const imageUrl = fieldData?.image?.url || null;
+  const shortDescription =
+    newsItem?.fieldData?.['short-description'] || '';
+
+  const fullTextHtml =
+    newsItem?.fieldData?.['text-image'] ||
+    newsItem?.fieldData?.description ||
+    newsItem?.fieldData?.['long-description'] ||
+    '';
+
+  const imageUrl =
+    newsItem?.fieldData?.image?.url ||
+    newsItem?.fieldData?.['main-image']?.url ||
+    newsItem?.fieldData?.image ||
+    newsItem?.fieldData?.['main-image'] ||
+    null;
+
+  function formatDate(dateString) {
+    if (!dateString) return '';
+
+    const newDate = new Date(dateString);
+
+    if (isNaN(newDate)) return dateString;
+
+    return newDate.toLocaleDateString('nl-BE', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  function stripHtml(html) {
+    if (!html) return '';
+    return html
+      .replace(/<[^>]*>/g, '')
+      .replace(/&nbsp;/g, ' ')
+      .replace(/&amp;/g, '&')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  const fullText = stripHtml(fullTextHtml);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title, { color: accentColor }]}>
+        {title}
+      </Text>
 
-      {!!date && <Text style={styles.date}>{date}</Text>}
+      {(date || campus) ? (
+        <Text style={styles.meta}>
+          {formatDate(date)}
+          {date && campus ? ' • ' : ''}
+          {campus}
+        </Text>
+      ) : null}
 
-      {!!imageUrl && (
+      {imageUrl ? (
         <Image
           source={{ uri: imageUrl }}
-          style={styles.heroImage}
+          style={styles.image}
           resizeMode="cover"
         />
-      )}
+      ) : null}
 
       {!!shortDescription && (
-        <View style={styles.introBox}>
-          <Text style={styles.introText}>{shortDescription}</Text>
-        </View>
-      )}
+  <View style={styles.shortDescriptionBox}>
+    <Text style={styles.shortDescription}>{shortDescription}</Text>
+  </View>
+)}
 
-      {!!htmlContent ? (
-        <RenderHTML
-          contentWidth={width - 40}
-          source={{ html: htmlContent }}
-          tagsStyles={{
-            p: styles.paragraph,
-            strong: styles.strong,
-            b: styles.strong,
-            h1: styles.htmlHeading,
-            h2: styles.htmlHeading,
-            h3: styles.htmlSubheading,
-            li: styles.listItem,
-            ul: styles.list,
-            ol: styles.list,
-          }}
-        />
-      ) : (
-        <Text style={styles.content}>Geen inhoud beschikbaar.</Text>
+      {!!fullText && (
+        <Text style={styles.description}>{fullText}</Text>
       )}
     </ScrollView>
   );
@@ -73,71 +106,55 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f3',
   },
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '800',
-    color: PRIMARY_GREEN,
-    marginBottom: 8,
+    marginBottom: 10,
+    fontFamily: 'Poppins',
+    lineHeight: 38,
   },
-  date: {
+  meta: {
     fontSize: 14,
-    color: '#666',
-    marginBottom: 20,
+    color: '#666666',
+    marginBottom: 16,
+    fontFamily: 'Poppins',
   },
-  heroImage: {
+  image: {
     width: '100%',
     height: 220,
-    borderRadius: 16,
+    borderRadius: 20,
     marginBottom: 20,
   },
-  introBox: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-  },
-  introText: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#222',
-    fontWeight: '600',
-  },
-  content: {
-    fontSize: 16,
-    lineHeight: 26,
-    color: '#111',
-  },
-  paragraph: {
-    fontSize: 16,
-    lineHeight: 26,
-    color: '#111',
-    marginBottom: 16,
-  },
-  strong: {
-    fontWeight: '700',
-    color: '#111',
-  },
-  htmlHeading: {
-    fontSize: 24,
-    lineHeight: 30,
-    fontWeight: '800',
-    color: PRIMARY_GREEN,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  htmlSubheading: {
-    fontSize: 20,
+  shortDescription: {
+    fontSize: 18,
     lineHeight: 28,
-    fontWeight: '700',
-    color: '#111',
-    marginTop: 8,
-    marginBottom: 10,
-  },
-  list: {
+    color: '#222222',
+    fontFamily: 'Poppins',
+    fontWeight: '600',
     marginBottom: 16,
   },
-  listItem: {
+  description: {
     fontSize: 16,
     lineHeight: 26,
-    color: '#111',
+    color: '#222222',
+    fontFamily: 'Poppins',
   },
+  shortDescriptionBox: {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 16,
+  marginBottom: 18,
+  shadowColor: '#000',
+  shadowOpacity: 0.06,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 2,
+},
+
+shortDescription: {
+  fontSize: 18,
+  lineHeight: 28,
+  color: '#222222',
+  fontFamily: 'Poppins',
+  fontWeight: '600',
+},
 });

@@ -128,6 +128,16 @@ export default function HomeScreen({ navigation }) {
         </Pressable>
       </View>
 
+      <Pressable
+  style={styles.gameCard}
+  onPress={() => navigation.navigate('MiniGame')}
+>
+  <Text style={styles.gameCardTitle}>Mini game</Text>
+  <Text style={styles.gameCardText}>
+    Test of jij schoolitems kan herkennen
+  </Text>
+</Pressable>
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Laatste nieuws</Text>
 
@@ -317,4 +327,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  gameCard: {
+  backgroundColor: '#ffffff',
+  borderRadius: 16,
+  padding: 20,
+  marginTop: 20,
+  marginBottom: 20,
+  shadowColor: '#000',
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
+  shadowOffset: { width: 0, height: 4 },
+  elevation: 3,
+},
+gameCardTitle: {
+  fontSize: 24,
+  fontWeight: '800',
+  color: '#86bc25',
+  marginBottom: 8,
+},
+gameCardText: {
+  fontSize: 16,
+  color: '#444',
+  lineHeight: 24,
+},
 });
